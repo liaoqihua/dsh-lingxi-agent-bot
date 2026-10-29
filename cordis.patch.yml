@@ -1,0 +1,5 @@
+# dsh-lingxi-agent-bot 的加载项：一个 Host 插件 + 一个网页设置页。
+# 设置全部走 ~/.dsh/dsh-lingxi-agent-bot/config.json；这里不写 config，避免把密钥放进 profile。
+- insert:
+    - id: companion
+      name: dsh-lingxi-agent-bot
