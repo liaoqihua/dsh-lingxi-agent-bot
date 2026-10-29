@@ -32,6 +32,22 @@ BotManager
 
 > 模块职责、边界与设计取舍见 [docs/mechanisms.md](docs/mechanisms.md)；字段级现状与数据模型见 [docs/communication-and-data-model.md](docs/communication-and-data-model.md)。
 
+## 截图
+
+> 截图里的机器人名与本地路径已打码。
+
+**总览** —— 连接状态、四步引导，以及心情 / 主动搭话 / 共享记忆的实时摘要：
+
+![总览](docs/screenshots/dashboard.png)
+
+**人格** —— 每台机器人一份人设文本，只对这台机器人的聊天生效：
+
+![人格](docs/screenshots/persona.png)
+
+**设置页** —— 全局设置与当前机器人两组入口：
+
+![设置页](docs/screenshots/settings-nav.png)
+
 ## 前置要求
 
 - 已安装并可正常启动的 **DeepSeek Harness（DSH）**（开发与回归基于 `0.2.1-rc.2`）。
