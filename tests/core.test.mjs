@@ -164,7 +164,7 @@ test('心情：模型判断后全局状态更新，一次变化只注入一次',
   const agent = makeAgent('session-mood', ctx)
   const state = await mood.maybeJudge(ctx, {
     agent,
-    userText: '大肥鱼今天表现真好，夸夸你',
+    userText: '测试机器人今天表现真好，夸夸你',
     replyText: '被你夸得有点不好意思了',
     config,
     ownerName: '饲养员',
