@@ -63,6 +63,14 @@ dsh plugin add link:<本仓库绝对路径>
 
 `link:` 安装把 profile 指向工作副本，改完代码重启 DSH 即生效（`dsh-hot-reload` 在场时前端改动可热更新）。
 
+### 网络受限时
+
+部分网络会拦 GitHub 的 22 端口（表现为 `ssh: connect to host github.com port 22: Connection timed out`，而 HTTPS 也可能不通）。这时让 SSH 走 443，只影响当前仓库：
+
+```powershell
+git config core.sshCommand "ssh -p 443 -o HostName=ssh.github.com"
+```
+
 ## 接入机器人
 
 打开 **设置 → 灵犀 → 机器人 → 接入机器人**。
