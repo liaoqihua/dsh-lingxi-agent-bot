@@ -77,7 +77,7 @@ test('微信原生轮询：getupdates 收到消息后走 deliverInbound', async 
           msgs: [{
             message_id: 'native-message-1',
             message_type: 1,
-            from_user_id: 'wxid_native',
+            from_user_id: 'wxid_test',
             item_list: [{ type: 1, text_item: { text: '在吗' } }],
           }],
           get_updates_buf: 'native-cursor',
@@ -99,7 +99,7 @@ test('微信原生轮询：getupdates 收到消息后走 deliverInbound', async 
   assert.equal(received.length, 1)
   assert.equal(received[0].channel, 'webhook')
   assert.equal(received[0].botId, 'wx-native')
-  assert.equal(received[0].peerId, 'wxid_native')
+  assert.equal(received[0].peerId, 'wxid_test')
   assert.equal(received[0].text, '在吗')
   assert.equal(channel.status().connected, true)
   channel.stop()
