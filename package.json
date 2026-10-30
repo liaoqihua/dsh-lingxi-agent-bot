@@ -1,6 +1,6 @@
 {
   "name": "dsh-lingxi-agent-bot",
-  "version": "0.6.0",
+  "version": "0.6.1",
   "private": true,
   "type": "module",
   "description": "灵犀 · 一体式陪伴与通信：QQ 官方 Bot 扫码登录、文字/图片/语音、人格、记忆、心情、主动搭话，全部收进一个插件。",
