@@ -258,7 +258,9 @@ scope = 'c2c' | 'group'
 9. 场景行（必带，替代旧的 [senderName] 前缀）：
    群聊 = "（群聊 · 发言人：{senderName}）"，私聊 = "（私聊）"
 10. 引用拼"（引用：…）"
-11. 图片（≤6 张）保存为 DSH 附件；单张失败降级为文本占位
+11. 图片（≤6 张）保存为 DSH 附件；类型一律按字节嗅探（不吃通道声明的 content_type
+    —— QQ 给表情包会声明 image/png 而实际是 webp/gif，宿主会按「声明与字节不符」整张拒绝）；
+    嗅探不出就跳过；单张失败降级为文本占位「[收到一张图片，但没能读取]」
 12. 组装 user 消息：{ id: `${channel}-${messageId}`（≤120）, role: 'user',
     content, source: { kind: 'companion-im', channel, conversation: key,
     senderName, senderId } }

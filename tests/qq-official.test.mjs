@@ -169,4 +169,67 @@ test('QQ 官方通道：扫码成功后保存凭证并连接', async () => {
   assert.ok(stopped >= 1)
 })
 
+test('QQ 入站图片：以字节为准，不认 QQ 声明的 content_type（表情包踩过这个坑）', async () => {
+  const bot = fakeBot()
+  const received = []
+  const channel = new QQOfficialChannel({}, {
+    bridge: { dedupe: () => false, deliverInbound: async (payload) => { received.push(payload); return { ok: true } } },
+    getConfig: config, createBot: () => bot, startQr: () => () => {}, encodeQr: async () => '',
+  })
+  await channel.start()
+  // 表情包常见组合：声明 png，实际是 webp。
+  const webp = Buffer.concat([
+    Buffer.from('RIFF'), Buffer.from([0x24, 0x00, 0x00, 0x00]),
+    Buffer.from('WEBP'), Buffer.from('VP8 '), Buffer.alloc(4),
+  ])
+  const original = globalThis.fetch
+  globalThis.fetch = async () => new Response(webp, { status: 200 })
+  try {
+    bot.emit({
+      kind: 'c2c',
+      senderId: 'user-openid-11',
+      content: '',
+      messageId: 'msg-img-1',
+      replyTarget: { scope: 'c2c', targetId: 'user-openid-11', msgId: 'msg-img-1' },
+      attachments: [{ content_type: 'image/png', url: 'https://multimedia.nt.qq.com.cn/x', filename: 'meme' }],
+    })
+    await new Promise((resolve) => setTimeout(resolve, 30))
+  } finally {
+    globalThis.fetch = original
+  }
+  assert.equal(received.length, 1)
+  assert.equal(received[0].images.length, 1)
+  assert.equal(received[0].images[0].mediaType, 'image/webp', '应该按实际字节判定类型')
+  assert.match(received[0].images[0].name, /\.webp$/)
+})
+
+test('QQ 入站图片：字节认不出时不瞎猜类型，留一句「发来图片但没能读取」', async () => {
+  const bot = fakeBot()
+  const received = []
+  const channel = new QQOfficialChannel({}, {
+    bridge: { dedupe: () => false, deliverInbound: async (payload) => { received.push(payload); return { ok: true } } },
+    getConfig: config, createBot: () => bot, startQr: () => () => {}, encodeQr: async () => '',
+  })
+  await channel.start()
+  const original = globalThis.fetch
+  // 典型现场：拿回来的不是图片（防盗链 / 过期 URL 返回的 HTML）。
+  globalThis.fetch = async () => new Response(Buffer.from('<html>403</html>'), { status: 200 })
+  try {
+    bot.emit({
+      kind: 'c2c',
+      senderId: 'user-openid-12',
+      content: '',
+      messageId: 'msg-img-2',
+      replyTarget: { scope: 'c2c', targetId: 'user-openid-12', msgId: 'msg-img-2' },
+      attachments: [{ content_type: 'image/png', url: 'https://multimedia.nt.qq.com.cn/y' }],
+    })
+    await new Promise((resolve) => setTimeout(resolve, 30))
+  } finally {
+    globalThis.fetch = original
+  }
+  assert.equal(received.length, 1)
+  assert.equal(received[0].images.length, 0, '认不出格式就不该带着猜的类型往下走')
+  assert.equal(received[0].text, '[对方发来一张图片，但没能读取]')
+})
+
 test.after(() => rmSync(process.env.DSH_HOME, { recursive: true, force: true }))
